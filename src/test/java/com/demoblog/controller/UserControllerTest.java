@@ -38,7 +38,7 @@ class UserControllerTest {
     void userSaveTest() throws Exception {
         //given
         UserForm userForm = UserForm.builder()
-                .userId("abc112")
+                .username("abc112")
                 .password("Qwertyuiop").build();
         String jsonRequest = convertToJson(userForm);
 
@@ -69,7 +69,7 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.errorMessage").value("잘못된 요청입니다."))
-                .andExpect(jsonPath("$.validation.userId").value("회원 아이디는 필수 입니다. (2글자 이상, 20 글자 이하)"))
+                .andExpect(jsonPath("$.validation.username").value("회원 아이디는 필수 입니다. (2글자 이상, 20 글자 이하)"))
                 .andDo(print());
 
         //then
@@ -80,7 +80,7 @@ class UserControllerTest {
     void userIdValidationCheck_Size() throws Exception {
         //given
         UserForm userForm = UserForm.builder()
-                .userId("a")
+                .username("a")
                 .password("Qwertyuiop")
                 .build();
         String jsonRequest = convertToJson(userForm);
@@ -92,7 +92,7 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.errorMessage").value("잘못된 요청입니다."))
-                .andExpect(jsonPath("$.validation.userId").value("회원 아이디는 2글자 이상, 20글자 이하입니다."))
+                .andExpect(jsonPath("$.validation.username").value("회원 아이디는 2글자 이상, 20글자 이하입니다."))
                 .andDo(print());
 
     }
@@ -104,7 +104,7 @@ class UserControllerTest {
     void passwordValidationCheck_Null() throws Exception {
         //given
         UserForm userForm = UserForm.builder()
-                .userId("abc")
+                .username("abc")
                 .build();
         String jsonRequest = convertToJson(userForm);
 
@@ -124,7 +124,7 @@ class UserControllerTest {
     void passwordValidationCheck_WrongCase1() throws Exception {
         //given
         UserForm userForm = UserForm.builder()
-                .userId("abc")
+                .username("abc")
                 .password("qwerty12345") //대,소문자 포함 조건 위반
                 .build();
         String jsonRequest = convertToJson(userForm);
@@ -145,7 +145,7 @@ class UserControllerTest {
     void passwordValidationCheck_WrongCase2() throws Exception {
         //given
         UserForm userForm = UserForm.builder()
-                .userId("abc")
+                .username("abc")
                 .password("") //8글자 이상 조건 위반
                 .build();
         String jsonRequest = convertToJson(userForm);

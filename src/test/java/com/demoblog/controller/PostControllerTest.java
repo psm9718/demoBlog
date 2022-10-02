@@ -1,5 +1,6 @@
 package com.demoblog.controller;
 
+import com.demoblog.domain.Post;
 import com.demoblog.repository.PostRepository;
 import com.demoblog.request.PostForm;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -107,6 +109,48 @@ class PostControllerTest {
         Assertions.assertThat(postRepository.count()).isEqualTo(1);
 
     }
+
+    @Test
+    @DisplayName("글 1개 조회")
+    void findOne () throws Exception{
+        //given
+        Post post = Post.builder()
+                .title("foo")
+                .content("bar")
+                .build();
+        postRepository.save(post);
+        //expected
+        mockMvc.perform(get("/posts/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(post.getId()))
+                .andExpect(jsonPath("$.title").value(post.getTitle()))
+                .andExpect(jsonPath("$.content").value(post.getContent()))
+                .andDo(print());
+
+    }
+    @Test
+    @DisplayName("글 1개 조회 (타이틀 10글자 이상)")
+    void findOne_LongTitle () throws Exception{
+        //given
+        Post post = Post.builder()
+                .title("서비스에서 요구하는 정책은 엔티티에 만들지 말고 응답 클래스를 분리해야 합니다.")
+                .content("bar")
+                .build();
+        postRepository.save(post);
+
+        //expected
+        mockMvc.perform(get("/posts/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(post.getId()))
+                .andExpect(jsonPath("$.title").value(post.getTitle().substring(0,10)))
+                .andExpect(jsonPath("$.content").value(post.getContent()))
+                .andDo(print());
+
+    }
+
+
 
     private String convertToJson(PostForm postForm) throws JsonProcessingException {
         return objectMapper.writeValueAsString(postForm);

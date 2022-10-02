@@ -23,10 +23,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
+    @Column(name = "username")
     @Size(min = 2, max = 20)
     @NotBlank(message = "회원 아이디는 필수 입니다.")
-    private String userId;
+    private String username;
 
 
     @Column(name = "password")
@@ -35,13 +35,4 @@ public class User {
 
 //    @OneToMany(cascade = CascadeType.ALL)
 //    private List<Post> posts = new ArrayList<>();
-
-    public static User createUser(String userId, String password) {
-        User user = new User();
-        user.userId = userId;
-        user.password = password;
-        return user;
-    }
-
-
 }

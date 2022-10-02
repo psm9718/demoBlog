@@ -21,7 +21,7 @@ public class UserService {
     public Long save(UserForm userForm) {
 
         User user = User.builder()
-                .userId(userForm.getUserId())
+                .username(userForm.getUsername())
                 .password(userForm.getPassword())
                 .build();
 

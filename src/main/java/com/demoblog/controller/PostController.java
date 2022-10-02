@@ -1,6 +1,8 @@
 package com.demoblog.controller;
 
+import com.demoblog.domain.Post;
 import com.demoblog.request.PostForm;
+import com.demoblog.response.PostResponse;
 import com.demoblog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,5 +46,18 @@ public class PostController {
         String postTitle = postService.write(postForm);
         return Map.of("postTitle", postTitle);
     }
+
+    /**
+     * /posts -> 글 전체 조회(검색 + 페이징)
+     * /posts/{postId} -> 글 한개만 조회
+     */
+
+    @GetMapping("/posts/{postId}")
+    public PostResponse get(@PathVariable Long postId) {
+        PostResponse postResponse = postService.get(postId);
+        return postResponse;
+    }
+
+
 
 }
