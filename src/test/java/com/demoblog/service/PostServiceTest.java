@@ -11,7 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @Transactional
@@ -91,6 +95,32 @@ class PostServiceTest {
         //then
         org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
                 () -> postService.get(postId));
+    }
+
+    @Test
+    @DisplayName("글 여러 개 조회")
+    void test5 () throws Exception{
+        //given
+        postRepository.saveAll(List.of(
+                Post.builder()
+                .title("foo1")
+                .content("bar1")
+                .build(),
+                Post.builder()
+                        .title("foo2")
+                        .content("bar2")
+                        .build(),
+                Post.builder()
+                        .title("foo3")
+                        .content("bar3")
+                        .build()
+                ));
+        //when
+        List<PostResponse> posts = postService.getList();
+
+        //then
+        assertThat(posts.size()).isEqualTo(3);
+
     }
 
 }

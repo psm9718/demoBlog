@@ -2,7 +2,6 @@ package com.demoblog.response;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

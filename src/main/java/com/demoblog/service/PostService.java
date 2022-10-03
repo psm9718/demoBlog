@@ -1,7 +1,6 @@
 package com.demoblog.service;
 
 import com.demoblog.domain.Post;
-import com.demoblog.domain.User;
 import com.demoblog.repository.PostRepository;
 import com.demoblog.request.PostForm;
 import com.demoblog.response.PostResponse;
@@ -10,7 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -39,12 +39,20 @@ public class PostService {
         /**
          * 응답 클래스 분리
          */
-        PostResponse postResponse = PostResponse.builder()
+
+        return PostResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .build();
+    }
 
-        return postResponse;
+    public List<PostResponse> getList() {
+        List<Post> all = postRepository.findAll();
+
+
+        return postRepository.findAll().stream()
+                .map(post -> new PostResponse(post))
+                .collect(Collectors.toList());
     }
 }

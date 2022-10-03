@@ -1,5 +1,6 @@
 package com.demoblog.response;
 
+import com.demoblog.domain.Post;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +22,12 @@ public class PostResponse {
         this.title = title.substring(0,Math.min(title.length() , 10));
         //StringIndexOutOfBoundsException 방지를 위한 추가적인 처리
         this.content = content;
+    }
+
+    //생성자 오버로딩
+    public PostResponse(Post post) {
+        this.id = post.getId();
+        this.title = post.getTitle();
+        this.content = post.getContent();
     }
 }

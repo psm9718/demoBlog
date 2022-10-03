@@ -127,7 +127,6 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.title").value(post.getTitle()))
                 .andExpect(jsonPath("$.content").value(post.getContent()))
                 .andDo(print());
-
     }
     @Test
     @DisplayName("글 1개 조회 (타이틀 10글자 이상)")
@@ -150,6 +149,45 @@ class PostControllerTest {
 
     }
 
+    @Test
+    @DisplayName("글 여러 개 조회")
+    void findList () throws Exception{
+        //given
+        Post post1 = postRepository.save(Post.builder()
+                .title("foo1")
+                .content("bar1")
+                .build());
+
+        Post post2 = postRepository.save(Post.builder()
+                .title("foo2")
+                .content("bar2")
+                .build());
+
+        Post post3 = postRepository.save(Post.builder()
+                .title("foo3")
+                .content("bar3")
+                .build());
+
+        /**
+         * list 형태로 object들이 담겨서 응답됨
+         * [ {"id" : ..., "title" : ...} , {id : .., title : ..}]
+         */
+        //expected
+        mockMvc.perform(get("/posts")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$[0].id").value(post1.getId()))
+                .andExpect(jsonPath("$[0].title").value(post1.getTitle()))
+                .andExpect(jsonPath("$[0].content").value(post1.getContent()))
+                .andExpect(jsonPath("$[1].id").value(post2.getId()))
+                .andExpect(jsonPath("$[1].title").value(post2.getTitle()))
+                .andExpect(jsonPath("$[1].content").value(post2.getContent()))
+                .andExpect(jsonPath("$[2].id").value(post3.getId()))
+                .andExpect(jsonPath("$[2].title").value(post3.getTitle()))
+                .andExpect(jsonPath("$[2].content").value(post3.getContent()))
+                .andDo(print());
+    }
 
 
     private String convertToJson(PostForm postForm) throws JsonProcessingException {

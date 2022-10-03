@@ -6,12 +6,9 @@ import com.demoblog.response.PostResponse;
 import com.demoblog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,11 +30,7 @@ public class PostController {
     private final PostService postService;
 
     //글 등록 : POST
-    @GetMapping("/posts")
-    public String postCreate() {
-        log.info("post create page");
-        return "postCreate";
-    }
+
     @PostMapping("/posts")
     public Map<String, String> post(@RequestBody @Valid PostForm postForm) {
         //클라이언트에게 저장한 해당 객체의 PK를 Map 형태로 전달
@@ -52,10 +45,14 @@ public class PostController {
      * /posts/{postId} -> 글 한개만 조회
      */
 
-    @GetMapping("/posts/{postId}")
+    @GetMapping("/posts/{postId}") //단건 조회 api
     public PostResponse get(@PathVariable Long postId) {
-        PostResponse postResponse = postService.get(postId);
-        return postResponse;
+        return postService.get(postId);
+    }
+
+    @GetMapping("/posts") //여러 post 조회 api
+    public List<PostResponse> getList() {
+        return postService.getList();
     }
 
 
