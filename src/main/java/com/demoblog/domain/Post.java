@@ -5,11 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
-import static javax.persistence.FetchType.*;
-
 @Entity
 @Getter
-@Setter
 @Table(name = "posts")
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,4 +33,25 @@ public class Post {
 //        this.user = user;
 //        user.getPosts().add(this);
 //    }
+
+    //권장 x
+    public void changeTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * 호돌맨 패턴 (PostEditor 하나의 인자만 넘겨주도록 개선 가능, 수정해야 할 필드만 정의된 PostEditor 클래스 정의가능)
+     * @return : PostEditorBuilder를 return
+     */
+    public PostEditor.PostEditorBuilder toEditor() {
+        return PostEditor.builder()
+                .title(this.title)
+                .title(this.content);
+    }
+
+    public void edit(PostEditor postEditor) {
+        title = postEditor.getTitle();
+        content = postEditor.getContent();
+    }
+
 }

@@ -2,6 +2,7 @@ package com.demoblog.service;
 
 import com.demoblog.domain.Post;
 import com.demoblog.repository.PostRepository;
+import com.demoblog.request.PostEdit;
 import com.demoblog.request.PostForm;
 import com.demoblog.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,13 +10,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -30,6 +35,7 @@ class PostServiceTest {
     void clean() {
         postRepository.deleteAll();
     }
+
     @Test
     @DisplayName("글 작성")
     void test1() {
@@ -88,39 +94,82 @@ class PostServiceTest {
         assertThat(response.getId()).isEqualTo(requestPost.getId());
         assertThat(response.getTitle()).isEqualTo("서비스에서 요구하는");
     }
+
     @Test
     @DisplayName("글 1개 조회 에러 테스트")
     void test3() {
         Long postId = 1L;
         //then
-        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
+        assertThrows(IllegalArgumentException.class,
                 () -> postService.get(postId));
     }
 
     @Test
-    @DisplayName("글 여러 개 조회")
-    void test5 () throws Exception{
+    @DisplayName("글 1 페이지 조회")
+    void test5() throws Exception {
         //given
-        postRepository.saveAll(List.of(
-                Post.builder()
-                .title("foo1")
-                .content("bar1")
-                .build(),
-                Post.builder()
-                        .title("foo2")
-                        .content("bar2")
-                        .build(),
-                Post.builder()
-                        .title("foo3")
-                        .content("bar3")
-                        .build()
-                ));
+        List<Post> requestPosts = IntStream.range(0, 30)
+                .mapToObj(i -> {
+                    return Post.builder()
+                            .title("제목 (" + i + ")")
+                            .content("내용입니다. " + i)
+                            .build();
+                })
+                .collect(Collectors.toList());
+        postRepository.saveAll(requestPosts);
+
+
         //when
-        List<PostResponse> posts = postService.getList();
+        Pageable pageable = PageRequest.of(0, 5, Sort.Direction.DESC, "id");
+        List<PostResponse> posts = postService.getList(pageable);
 
         //then
-        assertThat(posts.size()).isEqualTo(3);
+        assertThat(posts.size()).isEqualTo(5);
+        assertThat(posts.get(0).getTitle()).isEqualTo("제목 (29)");
+        assertThat(posts.get(4).getTitle()).isEqualTo("제목 (25)");
+    }
 
+    @Test
+    @DisplayName("글 제목 수정")
+    void editTitle () throws Exception{
+        //given
+        Post post = Post.builder()
+                .title("제목")
+                .content("내용입니다.")
+                .build();
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("안녕하십니까")
+                .content("내용입니다.")
+                .build();
+        //when
+        postService.edit(post.getId(), postEdit);
+
+        //then
+        Post changePost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id =" + post.getId()));
+
+        assertThat(changePost.getTitle()).isEqualTo("안녕하십니까");
+        assertThat(changePost.getContent()).isEqualTo("내용입니다.");
+    }
+
+    @Test
+    @DisplayName("게시글 삭제")
+    void deletePost () throws Exception{
+        //given
+        Post post = Post.builder()
+                .title("제목")
+                .content("내용입니다.")
+                .build();
+        postRepository.save(post);
+
+
+        //when
+        postService.delete(post.getId());
+
+        //then
+        assertThat(postRepository.count()).isEqualTo(0);
     }
 
 }

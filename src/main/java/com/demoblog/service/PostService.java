@@ -1,11 +1,16 @@
 package com.demoblog.service;
 
 import com.demoblog.domain.Post;
+import com.demoblog.domain.PostEditor;
 import com.demoblog.repository.PostRepository;
+import com.demoblog.request.PostEdit;
 import com.demoblog.request.PostForm;
 import com.demoblog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,12 +52,38 @@ public class PostService {
                 .build();
     }
 
-    public List<PostResponse> getList() {
-        List<Post> all = postRepository.findAll();
+    /**
+     * @param pageable 해당 페이지 리스트 return
+     * @return
+     */
+    public List<PostResponse> getList(Pageable pageable) {
 
-
-        return postRepository.findAll().stream()
+        return postRepository.findAll(pageable).stream()
                 .map(post -> new PostResponse(post))
                 .collect(Collectors.toList());
+
+    }
+
+    @Transactional
+    public void edit(Long id, PostEdit postEdit) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+
+        PostEditor.PostEditorBuilder editorBuilder = post.toEditor();
+        //아직 fix가 되지 않았기 때문에 변경이 필요한 데이터 수정해서 넘겨줌.
+        PostEditor postEditor = editorBuilder.title(postEdit.getTitle())
+                .content(postEdit.getContent())
+                .build();
+
+        post.edit(postEditor);
+
+
+    }
+
+    public void delete(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+
+        postRepository.delete(post);
     }
 }

@@ -4,6 +4,13 @@
 #    username: sa
 #    password:
 #    driver-class-name: org.h2.Driver
+
+spring:
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+        default-page-size: 5
 #jpa:
 #  hibernate:
 #    ddl-auto: create

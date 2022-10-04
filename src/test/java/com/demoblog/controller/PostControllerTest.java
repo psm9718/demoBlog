@@ -2,6 +2,7 @@ package com.demoblog.controller;
 
 import com.demoblog.domain.Post;
 import com.demoblog.repository.PostRepository;
+import com.demoblog.request.PostEdit;
 import com.demoblog.request.PostForm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,9 +16,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static org.assertj.core.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -29,7 +34,8 @@ class PostControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired ObjectMapper objectMapper;
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Autowired
     PostRepository postRepository;
@@ -106,13 +112,13 @@ class PostControllerTest {
 
         //then
 
-        Assertions.assertThat(postRepository.count()).isEqualTo(1);
+        assertThat(postRepository.count()).isEqualTo(1);
 
     }
 
     @Test
     @DisplayName("글 1개 조회")
-    void findOne () throws Exception{
+    void findOne() throws Exception {
         //given
         Post post = Post.builder()
                 .title("foo")
@@ -128,9 +134,10 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.content").value(post.getContent()))
                 .andDo(print());
     }
+
     @Test
     @DisplayName("글 1개 조회 (타이틀 10글자 이상)")
-    void findOne_LongTitle () throws Exception{
+    void findOne_LongTitle() throws Exception {
         //given
         Post post = Post.builder()
                 .title("서비스에서 요구하는 정책은 엔티티에 만들지 말고 응답 클래스를 분리해야 합니다.")
@@ -143,53 +150,91 @@ class PostControllerTest {
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(post.getId()))
-                .andExpect(jsonPath("$.title").value(post.getTitle().substring(0,10)))
+                .andExpect(jsonPath("$.title").value(post.getTitle().substring(0, 10)))
                 .andExpect(jsonPath("$.content").value(post.getContent()))
                 .andDo(print());
 
     }
 
     @Test
-    @DisplayName("글 여러 개 조회")
-    void findList () throws Exception{
+    @DisplayName("글 1 페이지 조회")
+    void findList() throws Exception {
         //given
-        Post post1 = postRepository.save(Post.builder()
-                .title("foo1")
-                .content("bar1")
-                .build());
+        List<Post> requestPosts = IntStream.range(0, 30)
+                .mapToObj(i -> {
+                    return Post.builder()
+                            .title("제목 (" + i + ")")
+                            .content("내용입니다. " + i)
+                            .build();
+                })
+                .collect(Collectors.toList());
+        postRepository.saveAll(requestPosts);
 
-        Post post2 = postRepository.save(Post.builder()
-                .title("foo2")
-                .content("bar2")
-                .build());
-
-        Post post3 = postRepository.save(Post.builder()
-                .title("foo3")
-                .content("bar3")
-                .build());
 
         /**
          * list 형태로 object들이 담겨서 응답됨
          * [ {"id" : ..., "title" : ...} , {id : .., title : ..}]
          */
         //expected
-        mockMvc.perform(get("/posts")
+        mockMvc.perform(get("/posts?page=1&sort=id,desc&size=5")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(3))
-                .andExpect(jsonPath("$[0].id").value(post1.getId()))
-                .andExpect(jsonPath("$[0].title").value(post1.getTitle()))
-                .andExpect(jsonPath("$[0].content").value(post1.getContent()))
-                .andExpect(jsonPath("$[1].id").value(post2.getId()))
-                .andExpect(jsonPath("$[1].title").value(post2.getTitle()))
-                .andExpect(jsonPath("$[1].content").value(post2.getContent()))
-                .andExpect(jsonPath("$[2].id").value(post3.getId()))
-                .andExpect(jsonPath("$[2].title").value(post3.getTitle()))
-                .andExpect(jsonPath("$[2].content").value(post3.getContent()))
+                .andExpect(jsonPath("$.length()").value(5))
+                .andExpect(jsonPath("$[0].id").value(25))
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("글 내용 수정")
+    void editContent() throws Exception {
+        //given
+        Post post = Post.builder()
+                .title("제목")
+                .content("내용")
+                .build();
+        postRepository.save(post);
 
+        PostEdit postEdit = PostEdit.builder()
+                .title("제목")
+                .content("내용이에요 호호")
+                .build();
+
+        String request = objectMapper.writeValueAsString(postEdit);
+
+        //when
+        mockMvc.perform(patch("/posts/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시글 삭제")
+    void deletePosts () throws Exception{
+        //given
+        Post post = Post.builder()
+                .title("글 제목")
+                .content("글 내용")
+                .build();
+        postRepository.save(post);
+
+        //when
+        mockMvc.perform(delete("/posts/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+        //then
+        assertThat(postRepository.count()).isEqualTo(0);
+    }
+
+
+    /**
+     * 수정 필요! json 컨버팅 해주는 별도의 객체 구현
+     * @param postForm
+     * @return
+     * @throws JsonProcessingException
+     */
     private String convertToJson(PostForm postForm) throws JsonProcessingException {
         return objectMapper.writeValueAsString(postForm);
     }

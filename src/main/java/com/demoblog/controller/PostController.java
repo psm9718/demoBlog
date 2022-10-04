@@ -1,11 +1,15 @@
 package com.demoblog.controller;
 
 import com.demoblog.domain.Post;
+import com.demoblog.request.PostEdit;
 import com.demoblog.request.PostForm;
 import com.demoblog.response.PostResponse;
 import com.demoblog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -51,9 +55,20 @@ public class PostController {
     }
 
     @GetMapping("/posts") //여러 post 조회 api
-    public List<PostResponse> getList() {
-        return postService.getList();
+    public List<PostResponse> getList(@PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 5) Pageable pageable) {
+        return postService.getList(pageable);
     }
+
+    @PatchMapping("/posts/{postId}")
+    public void edit(@PathVariable Long postId, @RequestBody @Valid PostEdit postEdit) {
+        postService.edit(postId, postEdit);
+    }
+
+    @DeleteMapping("/posts/{postId}")
+    public void delete(@PathVariable Long postId) {
+        postService.delete(postId);
+    }
+
 
 
 
