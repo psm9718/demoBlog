@@ -1,6 +1,7 @@
 package com.demoblog.service;
 
 import com.demoblog.domain.Post;
+import com.demoblog.exception.PostNotFound;
 import com.demoblog.repository.PostRepository;
 import com.demoblog.request.PostEdit;
 import com.demoblog.request.PostForm;
@@ -100,7 +101,7 @@ class PostServiceTest {
     void test3() {
         Long postId = 1L;
         //then
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(PostNotFound.class,
                 () -> postService.get(postId));
     }
 
@@ -172,4 +173,13 @@ class PostServiceTest {
         assertThat(postRepository.count()).isEqualTo(0);
     }
 
+    @Test
+    @DisplayName("글 삭제 - 존재하지 않는 글 예외")
+    void deleteNull () throws Exception{
+
+        assertThrows(PostNotFound.class,
+                () -> postService.delete(1L));
+
+
+    }
 }
