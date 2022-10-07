@@ -172,6 +172,20 @@ class UserControllerTest {
         Assertions.assertThat(case4).isTrue();
     }
 
+    /**************유저 조회 기능 ***************/
+    @Test
+    @DisplayName("유저 정보 검색")
+    void userFindById () throws Exception{
+        //given
+
+
+        //when
+
+
+        //then
+    }
+
+
     private static boolean isValid(String value) {
         return value.length() >= 8 && value.chars().boxed().anyMatch(Character::isUpperCase);
     }

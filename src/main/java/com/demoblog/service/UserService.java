@@ -2,6 +2,7 @@ package com.demoblog.service;
 
 
 import com.demoblog.domain.User;
+import com.demoblog.exception.UserNotFound;
 import com.demoblog.repository.UserRepository;
 import com.demoblog.request.UserForm;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +29,11 @@ public class UserService {
         userRepository.save(user);
 
         return user.getId();
+    }
+
+    public User get(Long userId) {
+
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFound());
     }
 }

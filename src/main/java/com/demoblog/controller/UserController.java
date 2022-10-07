@@ -5,9 +5,7 @@ import com.demoblog.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -30,8 +28,12 @@ public class UserController {
     }
 
     /**
-     * 회원 정보 수정
+     * 회원 정보 조회
      */
+    @PatchMapping("users/{userId}")
+    public void get(@PathVariable Long userId) {
+        log.info("READ user info");
+    }
 
 
 }
