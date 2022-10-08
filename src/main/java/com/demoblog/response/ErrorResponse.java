@@ -2,6 +2,7 @@ package com.demoblog.response;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class ErrorResponse {
     private final String code;
     private final String errorMessage;
     private final Map<String, String> validation = new HashMap<>();
-
+    private final LocalDateTime timestamp = LocalDateTime.now();
 
 
     public void addValidation(String field, String defaultMessage) {

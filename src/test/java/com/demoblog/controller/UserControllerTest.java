@@ -1,6 +1,10 @@
 package com.demoblog.controller;
 
+import com.demoblog.domain.User;
+import com.demoblog.exception.UserNotFound;
+import com.demoblog.repository.UserRepository;
 import com.demoblog.request.UserForm;
+import com.demoblog.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
@@ -14,7 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +33,9 @@ class UserControllerTest {
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    UserRepository userRepository;
 
 
     @Test
@@ -93,7 +101,6 @@ class UserControllerTest {
                 .andDo(print());
 
     }
-
 
 
     @Test
@@ -166,29 +173,111 @@ class UserControllerTest {
         boolean case3 = isValid("qwerty123");
         boolean case4 = isValid("Qwerty123");
 
-        Assertions.assertThat(case1).isFalse();
-        Assertions.assertThat(case2).isFalse();
-        Assertions.assertThat(case3).isFalse();
-        Assertions.assertThat(case4).isTrue();
+        assertThat(case1).isFalse();
+        assertThat(case2).isFalse();
+        assertThat(case3).isFalse();
+        assertThat(case4).isTrue();
     }
 
-    /**************유저 조회 기능 ***************/
     @Test
-    @DisplayName("유저 정보 검색")
-    void userFindById () throws Exception{
+    @DisplayName("회원가입 username 중복 오류")
+    void usernameDuplicateCheck() throws Exception {
         //given
-
+        User user = User.builder()
+                .username("su")
+                .password("Qwerr123123dfdf")
+                .build();
+        userRepository.save(user);
 
         //when
+        UserForm userForm = UserForm.builder()
+                .username("su")
+                .password("Qwerr123123")
+                .build();
+
+        String jsonRequest = convertToJson(userForm);
+
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.errorMessage").value("중복된 회원 이름입니다."))
+                .andDo(print());
 
 
         //then
     }
 
+    /**************유저 조회(READ) ***************/
+    @Test
+    @DisplayName("유저 정보 검색")
+    void userFindById() throws Exception {
+        //given
+        User user = User.builder()
+                .username("su")
+                .password("12345")
+                .build();
+        userRepository.save(user);
+
+        //when
+
+        //then
+    }
+
+    /**************유저 정보 변경(UPDATE) ***************/
+    @Test
+    @DisplayName("유저 이름 변경")
+    void usernameEdit() throws Exception {
+        //given
+        User user = User.builder()
+                .username("su")
+                .password("QWEddd12345")
+                .build();
+        userRepository.save(user);
+
+        UserForm userForm = UserForm.builder()
+                .username("park")
+                .password("QWEddd12345")
+                .build();
+
+        String jsonRequest = convertToJson(userForm);
+        //when
+        mockMvc.perform(patch("/users/{userId}", user.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        User editUser = userRepository.findById(user.getId()).orElseThrow(() -> new UserNotFound());
+        assertThat(editUser.getId()).isEqualTo(user.getId());
+        assertThat(editUser.getUsername()).isEqualTo(userForm.getUsername());
+        //then
+    }
+
+    @Test
+    @DisplayName("유저 정보 삭제")
+    void deleteUser () throws Exception{
+        //given
+        User user = User.builder()
+                .username("su")
+                .password("QWEdffdf2345")
+                .build();
+        userRepository.save(user);
+
+        //when
+        mockMvc.perform(delete("/users/{userId}", user.getId()))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        assertThat(userRepository.count()).isEqualTo(0);
+        //then
+    }
 
     private static boolean isValid(String value) {
         return value.length() >= 8 && value.chars().boxed().anyMatch(Character::isUpperCase);
     }
+
     private String convertToJson(UserForm userForm) throws JsonProcessingException {
         return objectMapper.writeValueAsString(userForm);
     }

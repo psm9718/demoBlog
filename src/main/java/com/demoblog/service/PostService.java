@@ -56,7 +56,6 @@ public class PostService {
      * @return
      */
     public List<PostResponse> getList(Pageable pageable) {
-
         return postRepository.findAll(pageable).stream()
                 .map(post -> new PostResponse(post))
                 .collect(Collectors.toList());

@@ -1,5 +1,6 @@
 package com.demoblog.controller;
 
+import com.demoblog.request.UserEdit;
 import com.demoblog.request.UserForm;
 import com.demoblog.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +29,16 @@ public class UserController {
     }
 
     /**
-     * 회원 정보 조회
+     * 회원 정보 수정
      */
     @PatchMapping("users/{userId}")
-    public void get(@PathVariable Long userId) {
-        log.info("READ user info");
+    public void get(@PathVariable Long userId, @RequestBody @Valid UserEdit userEdit) {
+        userService.modify(userId, userEdit);
     }
 
+    @DeleteMapping("/users/{userId}")
+    public void delete(@PathVariable Long userId) {
+        userService.delete(userId);
+    }
 
 }
