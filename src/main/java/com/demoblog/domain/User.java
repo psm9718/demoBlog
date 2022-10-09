@@ -6,6 +6,8 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -13,7 +15,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(name = "unique_username", columnNames = {"username"})})
-public class User {
+public class User extends BaseTimeEntity{
 
     private static final int MIN_USERID_LENGTH = 2;
 
@@ -36,6 +38,6 @@ public class User {
         password = userEdit.getPassword();
     }
 
-//    @OneToMany(cascade = CascadeType.ALL)
-//    private List<Post> posts = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private final List<Post> posts = new ArrayList<>();
 }
