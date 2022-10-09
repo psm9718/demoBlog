@@ -5,6 +5,7 @@ import com.demoblog.exception.PostNotFound;
 import com.demoblog.repository.PostRepository;
 import com.demoblog.request.PostEdit;
 import com.demoblog.request.PostForm;
+import com.demoblog.request.PostSearch;
 import com.demoblog.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -96,6 +97,7 @@ class PostServiceTest {
         assertThat(response.getTitle()).isEqualTo("서비스에서 요구하는");
     }
 
+
     @Test
     @DisplayName("글 1개 조회 에러 테스트")
     void test3() {
@@ -121,18 +123,50 @@ class PostServiceTest {
 
 
         //when
-        Pageable pageable = PageRequest.of(0, 5, Sort.Direction.DESC, "id");
-        List<PostResponse> posts = postService.getList(pageable);
+        PostSearch postSearch = PostSearch.builder()
+                .page(1)
+                .size(10)
+                .build();
+        List<PostResponse> posts = postService.getList(postSearch);
 
         //then
-        assertThat(posts.size()).isEqualTo(5);
+        assertThat(posts.size()).isEqualTo(10L);
         assertThat(posts.get(0).getTitle()).isEqualTo("제목 (29)");
         assertThat(posts.get(4).getTitle()).isEqualTo("제목 (25)");
     }
 
     @Test
+    @DisplayName("페이지를 0으로 요청하면 글 1 페이지 조회")
+    void error_readPage_wrongPage() throws Exception {
+        //given
+        List<Post> requestPosts = IntStream.range(0, 30)
+                .mapToObj(i -> {
+                    return Post.builder()
+                            .title("제목 (" + i + ")")
+                            .content("내용입니다. " + i)
+                            .build();
+                })
+                .collect(Collectors.toList());
+        postRepository.saveAll(requestPosts);
+
+
+        //when
+        PostSearch postSearch = PostSearch.builder()
+                .page(0)
+                .size(10)
+                .build();
+        List<PostResponse> posts = postService.getList(postSearch);
+
+        //then
+        assertThat(posts.size()).isEqualTo(10L);
+        assertThat(posts.get(0).getTitle()).isEqualTo("제목 (29)");
+        assertThat(posts.get(4).getTitle()).isEqualTo("제목 (25)");
+    }
+
+
+    @Test
     @DisplayName("글 제목 수정")
-    void editTitle () throws Exception{
+    void editTitle() throws Exception {
         //given
         Post post = Post.builder()
                 .title("제목")
@@ -157,7 +191,7 @@ class PostServiceTest {
 
     @Test
     @DisplayName("게시글 삭제")
-    void deletePost () throws Exception{
+    void deletePost() throws Exception {
         //given
         Post post = Post.builder()
                 .title("제목")
@@ -175,7 +209,7 @@ class PostServiceTest {
 
     @Test
     @DisplayName("글 삭제 - 존재하지 않는 글 예외")
-    void deleteNull () throws Exception{
+    void deleteNull() throws Exception {
 
         assertThrows(PostNotFound.class,
                 () -> postService.delete(1L));

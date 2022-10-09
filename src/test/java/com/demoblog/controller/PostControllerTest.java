@@ -156,33 +156,34 @@ class PostControllerTest {
 
     }
 
-//    @Test
-//    @DisplayName("글 1 페이지 조회")
-//    void findList() throws Exception {
-//        //given
-//        List<Post> requestPosts = IntStream.range(0, 30)
-//                .mapToObj(i -> {
-//                    return Post.builder()
-//                            .title("제목 (" + i + ")")
-//                            .content("내용입니다. " + i)
-//                            .build();
-//                })
-//                .collect(Collectors.toList());
-//        postRepository.saveAll(requestPosts);
-//
-//
-//        /**
-//         * list 형태로 object들이 담겨서 응답됨
-//         * [ {"id" : ..., "title" : ...} , {id : .., title : ..}]
-//         */
-//        //expected
-//        mockMvc.perform(get("/posts?page=1&sort=id,desc&size=5")
-//                        .contentType(APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.length()").value(5))
-//                .andExpect(jsonPath("$[0].id").value(25))
-//                .andDo(print());
-//    }
+    @Test
+    @DisplayName("글 1 페이지 조회")
+    void findList() throws Exception {
+        //given
+        List<Post> requestPosts = IntStream.range(0, 30)
+                .mapToObj(i -> {
+                    return Post.builder()
+                            .title("제목 (" + i + ")")
+                            .content("내용입니다. " + i)
+                            .build();
+                })
+                .collect(Collectors.toList());
+        postRepository.saveAll(requestPosts);
+
+
+        /**
+         * list 형태로 object들이 담겨서 응답됨
+         * [ {"id" : ..., "title" : ...} , {id : .., title : ..}]
+         */
+        //expected
+        mockMvc.perform(get("/posts?page=1&size=10")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(10))
+                .andExpect(jsonPath("$[0].title").value("제목 (29)"))
+                .andExpect(jsonPath("$[0].content").value("내용입니다. 29"))
+                .andDo(print());
+    }
 
     @Test
     @DisplayName("글 내용 수정")

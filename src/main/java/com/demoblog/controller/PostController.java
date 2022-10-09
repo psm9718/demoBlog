@@ -3,6 +3,7 @@ package com.demoblog.controller;
 import com.demoblog.domain.Post;
 import com.demoblog.request.PostEdit;
 import com.demoblog.request.PostForm;
+import com.demoblog.request.PostSearch;
 import com.demoblog.response.PostResponse;
 import com.demoblog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -54,9 +55,9 @@ public class PostController {
         return postService.get(postId);
     }
 
-    @GetMapping("/posts") //여러 post 조회 api
-    public List<PostResponse> getList(@PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 5) Pageable pageable) {
-        return postService.getList(pageable);
+    @GetMapping("/posts") //한 페이지 post 조회 api
+    public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
+        return postService.getList(postSearch);
     }
 
     @PatchMapping("/posts/{postId}")

@@ -6,6 +6,7 @@ import com.demoblog.exception.PostNotFound;
 import com.demoblog.repository.PostRepository;
 import com.demoblog.request.PostEdit;
 import com.demoblog.request.PostForm;
+import com.demoblog.request.PostSearch;
 import com.demoblog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,15 +52,22 @@ public class PostService {
                 .build();
     }
 
+//    public List<PostResponse> getList(Pageable pageable) {
+//        return postRepository.findAll(pageable).stream()
+//                .map(post -> new PostResponse(post))
+//                .collect(Collectors.toList());
+//
+//    }
+
     /**
-     * @param pageable 해당 페이지 리스트 return
+     * querydsl 사용
+     * @param postSearch
      * @return
      */
-    public List<PostResponse> getList(Pageable pageable) {
-        return postRepository.findAll(pageable).stream()
+    public List<PostResponse> getList(PostSearch postSearch) {
+        return postRepository.getList(postSearch).stream()
                 .map(post -> new PostResponse(post))
                 .collect(Collectors.toList());
-
     }
 
     @Transactional
