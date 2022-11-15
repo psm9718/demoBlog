@@ -1,13 +1,11 @@
 package com.demoblog.controller;
 
-import com.demoblog.domain.User;
+import com.demoblog.domain.user.User;
 import com.demoblog.exception.UserNotFound;
 import com.demoblog.repository.UserRepository;
 import com.demoblog.request.UserForm;
-import com.demoblog.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

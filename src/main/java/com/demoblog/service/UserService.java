@@ -1,7 +1,8 @@
 package com.demoblog.service;
 
 
-import com.demoblog.domain.User;
+import com.demoblog.config.auth.dto.UserProfile;
+import com.demoblog.domain.user.User;
 import com.demoblog.exception.UserNotFound;
 import com.demoblog.repository.UserRepository;
 import com.demoblog.request.UserEdit;

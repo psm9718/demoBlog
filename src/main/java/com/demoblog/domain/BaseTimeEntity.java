@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 /**
  * JPA Auditing class
  */
+@Getter
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
-@Getter
 public abstract class BaseTimeEntity {
 
     @CreatedDate

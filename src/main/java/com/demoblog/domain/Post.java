@@ -1,5 +1,6 @@
 package com.demoblog.domain;
 
+import com.demoblog.domain.user.User;
 import lombok.*;
 
 import javax.persistence.*;
