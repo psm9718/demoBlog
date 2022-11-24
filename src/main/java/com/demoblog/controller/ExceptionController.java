@@ -1,8 +1,6 @@
 package com.demoblog.controller;
 
 import com.demoblog.response.ErrorResponse;
-import lombok.Builder;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.validation.ConstraintDefinitionException;
 import java.util.List;
 
 @Slf4j
