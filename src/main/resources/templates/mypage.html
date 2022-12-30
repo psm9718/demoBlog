@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>mypage</title>
+</head>
+<body>
+<div th:text="${user.getUsername()}"></div> 님 반갑습니다.
+
+<form action="/images" method="post">
+  이미지 업로드 : <input type="text" name="st_name"><br>
+  <input type="submit">
+</form>
+
+
+</body>
+</html>

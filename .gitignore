@@ -41,3 +41,5 @@ out/
 
 ### front-end ###
 /frontend
+/package.json
+/package-lock.json

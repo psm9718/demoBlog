@@ -63,4 +63,8 @@ public class UserService {
     public Long save(User user) {
         return userRepository.save(user).getId();
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFound());
+    }
 }

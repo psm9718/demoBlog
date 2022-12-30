@@ -38,7 +38,6 @@ public class User extends BaseTimeEntity {
 //    @NotBlank(message = "회원 비밀번호는 필수 입니다.")
     private String password;
 
-
     private String email;
     private String imageUrl;
     @Enumerated(EnumType.STRING)

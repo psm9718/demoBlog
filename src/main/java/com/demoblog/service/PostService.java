@@ -10,6 +10,8 @@ import com.demoblog.request.PostSearch;
 import com.demoblog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,5 +92,9 @@ public class PostService {
                 .orElseThrow(() -> new PostNotFound());
 
         postRepository.delete(post);
+    }
+
+    public List<Post> findAllDesc() {
+        return postRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 }

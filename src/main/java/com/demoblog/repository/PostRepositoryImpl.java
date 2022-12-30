@@ -5,9 +5,11 @@ import com.demoblog.domain.QPost;
 import com.demoblog.request.PostSearch;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom{
 

@@ -1,5 +1,6 @@
 package com.demoblog.controller;
 
+import com.demoblog.config.auth.LoginUser;
 import com.demoblog.config.auth.dto.SessionUser;
 import com.demoblog.service.PostService;
 import com.demoblog.service.UserService;
@@ -17,9 +18,8 @@ public class IndexController {
     private final PostService postService;
 
     @RequestMapping("/")
-    public String index(Model model, HttpSession httpSession) {
-        SessionUser user = (SessionUser) httpSession.getAttribute("user");
-
+    public String index(Model model, @LoginUser SessionUser user) {
+        model.addAttribute("posts", postService.findAllDesc());
         if (user != null) {
             model.addAttribute("username", user.getName());
         }
