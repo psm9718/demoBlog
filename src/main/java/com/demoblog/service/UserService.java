@@ -2,6 +2,7 @@ package com.demoblog.service;
 
 
 import com.demoblog.config.auth.dto.UserProfile;
+import com.demoblog.domain.user.Role;
 import com.demoblog.domain.user.User;
 import com.demoblog.exception.UserNotFound;
 import com.demoblog.repository.UserRepository;
@@ -9,8 +10,11 @@ import com.demoblog.request.UserEdit;
 import com.demoblog.request.UserForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.demoblog.domain.user.Role.USER;
 
 @Slf4j
 @Service
@@ -26,6 +30,7 @@ public class UserService {
         User user = User.builder()
                 .username(userForm.getUsername())
                 .password(userForm.getPassword())
+                .role(USER)
                 .build();
 
         userRepository.save(user);
@@ -40,8 +45,9 @@ public class UserService {
     }
 
     @Transactional
+//    @PreAuthorize("isAuthenticated()")
     public void modify(Long id, UserEdit userEdit) {
-        log.info("User Modify");
+        log.info("User {} : Modify", id);
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFound());
 
@@ -51,5 +57,10 @@ public class UserService {
     public void delete(Long userId) {
         User findUser = userRepository.findById(userId).orElseThrow(() -> new UserNotFound());
         userRepository.delete(findUser);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    public Long save(User user) {
+        return userRepository.save(user).getId();
     }
 }

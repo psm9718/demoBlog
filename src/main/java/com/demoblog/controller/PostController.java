@@ -1,16 +1,12 @@
 package com.demoblog.controller;
 
-import com.demoblog.domain.Post;
 import com.demoblog.request.PostEdit;
-import com.demoblog.request.PostForm;
+import com.demoblog.request.PostCreate;
 import com.demoblog.request.PostSearch;
 import com.demoblog.response.PostResponse;
 import com.demoblog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,26 +25,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PostController {
 
-    //http Method
-    //GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD, TRACE, CONNECT
-
     private final PostService postService;
 
-    //글 등록 : POST
-
     @PostMapping("/posts")
-    public Map<String, String> post(@RequestBody @Valid PostForm postForm) {
+    public Map<String, String> post(@RequestBody @Valid PostCreate postCreate) {
         //클라이언트에게 저장한 해당 객체의 PK를 Map 형태로 전달
-        log.info("postForm = {}", postForm);
-
-        String postTitle = postService.write(postForm);
+        postCreate.validate();
+        String postTitle = postService.write(postCreate);
         return Map.of("postTitle", postTitle);
     }
-
-    /**
-     * /posts -> 글 전체 조회(검색 + 페이징)
-     * /posts/{postId} -> 글 한개만 조회
-     */
 
     @GetMapping("/posts/{postId}") //단건 조회 api
     public PostResponse get(@PathVariable Long postId) {
@@ -69,8 +54,6 @@ public class PostController {
     public void delete(@PathVariable Long postId) {
         postService.delete(postId);
     }
-
-
 
 
 }

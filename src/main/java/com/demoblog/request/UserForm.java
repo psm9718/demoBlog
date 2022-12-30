@@ -1,5 +1,6 @@
 package com.demoblog.request;
 
+import com.demoblog.domain.user.Role;
 import com.demoblog.response.PasswordCheck;
 import lombok.*;
 

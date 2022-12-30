@@ -4,7 +4,7 @@ import com.demoblog.domain.Post;
 import com.demoblog.exception.PostNotFound;
 import com.demoblog.repository.PostRepository;
 import com.demoblog.request.PostEdit;
-import com.demoblog.request.PostForm;
+import com.demoblog.request.PostCreate;
 import com.demoblog.request.PostSearch;
 import com.demoblog.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,9 +12,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -42,13 +39,13 @@ class PostServiceTest {
     @DisplayName("글 작성")
     void test1() {
         //given
-        PostForm postForm = PostForm.builder()
+        PostCreate postCreate = PostCreate.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
                 .build();
 
         //when
-        postService.write(postForm);
+        postService.write(postCreate);
 
         //then
         assertThat(1L).isSameAs(postRepository.count());

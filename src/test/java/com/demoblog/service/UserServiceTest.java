@@ -1,5 +1,6 @@
 package com.demoblog.service;
 
+import com.demoblog.domain.user.Role;
 import com.demoblog.domain.user.User;
 import com.demoblog.exception.UserNotFound;
 import com.demoblog.repository.UserRepository;
@@ -12,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.demoblog.domain.user.Role.USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -79,6 +82,7 @@ class UserServiceTest {
         User user = User.builder()
                 .username("su")
                 .password("123")
+                .role(USER)
                 .build();
         userRepository.save(user);
 
@@ -97,6 +101,7 @@ class UserServiceTest {
         User user = User.builder()
                 .username("su")
                 .password("123")
+                .role(USER)
                 .build();
         userRepository.save(user);
 
@@ -112,6 +117,7 @@ class UserServiceTest {
         User user = User.builder()
                 .username("su")
                 .password("123")
+                .role(USER)
                 .build();
         userRepository.save(user);
 
@@ -136,6 +142,7 @@ class UserServiceTest {
         User user = User.builder()
                 .username("su")
                 .password("123")
+                .role(USER)
                 .build();
         userRepository.save(user);
 
@@ -151,4 +158,17 @@ class UserServiceTest {
         //when
         assertThrows(UserNotFound.class, () -> userService.delete(1L));
     }
+
+    @Test
+    @DisplayName("인증권한 modify 테스트")
+    @WithMockUser
+    void authenticatedUser () throws Exception{
+        User user = User.builder()
+                .username("test")
+                .role(USER)
+                .build();
+
+        assertThat(userService.save(user)).isNotNull();
+    }
+
 }

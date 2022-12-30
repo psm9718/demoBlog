@@ -1,21 +1,29 @@
 package com.demoblog.controller;
 
+import com.demoblog.domain.user.Role;
 import com.demoblog.domain.user.User;
 import com.demoblog.exception.UserNotFound;
 import com.demoblog.repository.UserRepository;
+import com.demoblog.request.UserEdit;
 import com.demoblog.request.UserForm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.demoblog.domain.user.Role.USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -24,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser
 @Transactional
 class UserControllerTest {
 
@@ -34,6 +43,7 @@ class UserControllerTest {
 
     @Autowired
     UserRepository userRepository;
+    private User user;
 
 
     @Test
@@ -42,7 +52,8 @@ class UserControllerTest {
         //given
         UserForm userForm = UserForm.builder()
                 .username("abc112")
-                .password("Qwertyuiop").build();
+                .password("Qwertyuiop")
+                .build();
         String jsonRequest = convertToJson(userForm);
 
 
@@ -184,6 +195,7 @@ class UserControllerTest {
         User user = User.builder()
                 .username("su")
                 .password("Qwerr123123dfdf")
+                .role(USER)
                 .build();
         userRepository.save(user);
 
@@ -215,6 +227,7 @@ class UserControllerTest {
         User user = User.builder()
                 .username("su")
                 .password("12345")
+                .role(USER)
                 .build();
         userRepository.save(user);
 
@@ -231,6 +244,7 @@ class UserControllerTest {
         User user = User.builder()
                 .username("su")
                 .password("QWEddd12345")
+                .role(USER)
                 .build();
         userRepository.save(user);
 
@@ -260,6 +274,7 @@ class UserControllerTest {
         User user = User.builder()
                 .username("su")
                 .password("QWEdffdf2345")
+                .role(USER)
                 .build();
         userRepository.save(user);
 
@@ -270,6 +285,34 @@ class UserControllerTest {
 
         assertThat(userRepository.count()).isEqualTo(0);
         //then
+    }
+
+    @Test
+    @DisplayName("유저 인증권한 테스트")
+    @WithMockUser
+    void authenticatedUser () throws Exception{
+        //given
+        user = User.builder()
+                .username("user")
+                .password("user2123123123")
+                .role(USER)
+                .build();
+        userRepository.save(user);
+
+        UserEdit userEdit = UserEdit.builder()
+                .username("hello")
+                .password("World123123123")
+                .build();
+        String request = objectMapper.writeValueAsString(userEdit);
+        //when
+        mockMvc.perform(patch("/users/" + user.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isOk())
+                .andDo(print());
+        //then
+        User ById = userRepository.findById(user.getId()).orElseThrow(() -> new UserNotFound());
+        assertThat(ById.getUsername()).isEqualTo(userEdit.getUsername());
     }
 
     private static boolean isValid(String value) {

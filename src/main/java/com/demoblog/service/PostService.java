@@ -5,7 +5,7 @@ import com.demoblog.domain.PostEditor;
 import com.demoblog.exception.PostNotFound;
 import com.demoblog.repository.PostRepository;
 import com.demoblog.request.PostEdit;
-import com.demoblog.request.PostForm;
+import com.demoblog.request.PostCreate;
 import com.demoblog.request.PostSearch;
 import com.demoblog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +24,12 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    @Transactional(readOnly = false)
-    public String write(PostForm postForm) {
+    @Transactional
+    public String write(PostCreate postCreate) {
 
         Post post = Post.builder()
-                .title(postForm.getTitle())
-                .content(postForm.getContent()).build();
+                .title(postCreate.getTitle())
+                .content(postCreate.getContent()).build();
 
         postRepository.save(post);
 

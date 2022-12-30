@@ -3,16 +3,16 @@ package com.demoblog.controller;
 import com.demoblog.domain.Post;
 import com.demoblog.repository.PostRepository;
 import com.demoblog.request.PostEdit;
-import com.demoblog.request.PostForm;
+import com.demoblog.request.PostCreate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@WithMockUser
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
@@ -49,17 +50,13 @@ class PostControllerTest {
     @DisplayName("/posts 요청에 대한 테스트")
     void postSave() throws Exception {
 
-        /**
-         * application/json 방식
-         */
-
         //given
-        PostForm postForm = PostForm.builder()
+        PostCreate postCreate = PostCreate.builder()
                 .title("제목입니다.")
                 .content("글 내용입니다. 하하하")
                 .build();
 
-        String request = convertToJson(postForm);
+        String request = convertToJson(postCreate);
         System.out.println("request = " + request);
 
         //when
@@ -78,11 +75,11 @@ class PostControllerTest {
     @DisplayName("/posts 요청시 title 값은 필수다.")
     void titleValidationCheck() throws Exception {
 
-        PostForm postForm = PostForm.builder()
+        PostCreate postCreate = PostCreate.builder()
                 .title(null)
                 .content("글 내용입니다 하하하")
                 .build();
-        String request = convertToJson(postForm);
+        String request = convertToJson(postCreate);
         mockMvc.perform(post("/posts")
                         .contentType(APPLICATION_JSON)
                         .content(request)
@@ -97,11 +94,11 @@ class PostControllerTest {
     @DisplayName("/posts 요청 시 DB에 포스트가 저장된다.")
     void postSave_db() throws Exception {
         //given
-        PostForm postForm = PostForm.builder()
+        PostCreate postCreate = PostCreate.builder()
                 .title("제목입니다.")
                 .content("글 내용입니다. 하하하")
                 .build();
-        String request = convertToJson(postForm);
+        String request = convertToJson(postCreate);
 
         mockMvc.perform(post("/posts")
                         .contentType(APPLICATION_JSON)
@@ -232,12 +229,12 @@ class PostControllerTest {
 
     /**
      * 수정 필요! json 컨버팅 해주는 별도의 객체 구현
-     * @param postForm
+     * @param postCreate
      * @return
      * @throws JsonProcessingException
      */
-    private String convertToJson(PostForm postForm) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(postForm);
+    private String convertToJson(PostCreate postCreate) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(postCreate);
     }
 
 }
