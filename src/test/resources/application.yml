@@ -1,3 +1,31 @@
 logging.level:
   org.hibernate.SQL: debug
   org.hibernate.type: trace
+
+# test OAuth
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test
+            client-secret: test
+            scope:
+              - profile
+              - email
+
+
+# test S3
+cloud:
+  aws:
+    credentials:
+      access-key: test
+      secret-key: test
+    s3: #버킷이름
+      bucket: test
+    region: #S3 지역
+      static: ap-northeast-2
+    stack:
+      auto: false
+

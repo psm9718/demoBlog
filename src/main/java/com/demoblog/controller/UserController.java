@@ -20,14 +20,13 @@ import javax.validation.Valid;
 import java.util.Map;
 
 @Slf4j
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping("/users")
-    @ResponseBody
     public Map<String, String> createForm(@RequestBody @Valid UserForm userForm) {
         log.info("create user form : {}", userForm);
 
@@ -50,11 +49,11 @@ public class UserController {
         userService.delete(userId);
     }
 
-    @GetMapping("/mypage")
-    public String getMypage(Model model, @LoginUser SessionUser sessionUser) {
-        User user = userService.findByEmail(sessionUser.getEmail());
-        model.addAttribute(user);
-        return "/mypage";
-    }
+//    @GetMapping("/mypage")
+//    public String getMypage(Model model, @LoginUser SessionUser sessionUser) {
+//        User user = userService.findByEmail(sessionUser.getEmail());
+//        model.addAttribute(user);
+//        return "/mypage";
+//    }
 
 }
