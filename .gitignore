@@ -18,6 +18,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
+application.yml
 application-oauth.yml
 .idea
 *.iws
@@ -36,3 +37,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### front-end ###
+/frontend
