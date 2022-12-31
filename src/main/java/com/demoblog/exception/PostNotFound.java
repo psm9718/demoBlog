@@ -7,8 +7,7 @@ public class PostNotFound extends RuntimeException {
     public PostNotFound() {
         super(MESSAGE);
     }
-
-//    public PostNotFound(Throwable cause) {
-//        super(MESSAGE, cause);
-//    }
+    public PostNotFound(Throwable cause) {
+        super(MESSAGE, cause);
+    }
 }

@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.http.HttpRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +28,12 @@ import java.util.Map;
 public class PostController {
 
     private final PostService postService;
+
+    @GetMapping("/test")
+    public String test(HttpServletRequest request) {
+        log.info(">> {}", request.getParameter("accessToken"));
+        return "hello";
+    }
 
     @PostMapping("/posts")
     public Map<String, String> post(@RequestBody @Valid PostCreate postCreate) {

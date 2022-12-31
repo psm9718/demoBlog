@@ -40,8 +40,9 @@ public class PostService {
 
     public PostResponse get(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFound());
+                .orElseThrow(PostNotFound::new);
 
+        log.info("> post service : {}", post.getId());
         /**
          * 응답 클래스 분리
          */

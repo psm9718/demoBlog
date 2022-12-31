@@ -2,8 +2,8 @@ package com.demoblog.controller;
 
 import com.demoblog.domain.Post;
 import com.demoblog.repository.PostRepository;
-import com.demoblog.request.PostEdit;
 import com.demoblog.request.PostCreate;
+import com.demoblog.request.PostEdit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,17 +14,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser
 @SpringBootTest
@@ -209,7 +211,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName("게시글 삭제")
-    void deletePosts () throws Exception{
+    void deletePosts() throws Exception {
         //given
         Post post = Post.builder()
                 .title("글 제목")
@@ -226,9 +228,25 @@ class PostControllerTest {
         assertThat(postRepository.count()).isEqualTo(0);
     }
 
+    @Test
+    @DisplayName("존재하지 않는 게시글")
+    void postNotFound() throws Exception {
+        //given
+        mockMvc.perform(get("/posts/{postId}", 33L)
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        //when
+
+
+        //then
+    }
 
     /**
      * 수정 필요! json 컨버팅 해주는 별도의 객체 구현
+     *
      * @param postCreate
      * @return
      * @throws JsonProcessingException
