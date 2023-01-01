@@ -1,5 +1,6 @@
 package com.demoblog.request;
 
+import com.demoblog.exception.DemoBlogException;
 import com.demoblog.exception.InvalidRequest;
 import lombok.*;
 
@@ -20,7 +21,7 @@ public class PostCreate {
 
     public void validate() {
         if (title.contains("바보")) {
-            throw new InvalidRequest("title", "제목에 바보가 포함될 수 없습니다.");
+            throw new InvalidRequest("title", "제목에 \'바보\'가 포함될 수 없습니다.");
         }
     }
 }

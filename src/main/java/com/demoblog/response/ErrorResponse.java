@@ -1,5 +1,8 @@
 package com.demoblog.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +25,7 @@ import java.util.Map;
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+//@JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 public class ErrorResponse {
 
 //    private final ErrorMessage errorMessage;
@@ -33,6 +37,9 @@ public class ErrorResponse {
 
     public void addValidation(String field, String defaultMessage) {
         this.validation.put(field, defaultMessage);
+    }
+    public void addValidation(Map<String, String> map) {
+        validation.putAll(map);
     }
 
 }

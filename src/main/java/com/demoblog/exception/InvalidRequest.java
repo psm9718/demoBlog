@@ -1,7 +1,23 @@
 package com.demoblog.exception;
 
-public class InvalidRequest extends RuntimeException {
-    public InvalidRequest(String fieldName, String message) {
-        super(fieldName + " : " + message);
+import lombok.Getter;
+
+@Getter
+public class InvalidRequest extends DemoBlogException {
+
+    private static final String MESSAGE = "잘못된 요청입니다.";
+    public InvalidRequest() {
+        super(MESSAGE);
+    }
+
+    public InvalidRequest(String key, String value) {
+        super(MESSAGE);
+        addValidation(key, value);
+    }
+
+
+    @Override
+    public int getStatusCode() {
+        return 400;
     }
 }

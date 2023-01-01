@@ -1,7 +1,7 @@
 package com.demoblog.controller;
 
-import com.demoblog.request.PostEdit;
 import com.demoblog.request.PostCreate;
+import com.demoblog.request.PostEdit;
 import com.demoblog.request.PostSearch;
 import com.demoblog.response.PostResponse;
 import com.demoblog.service.PostService;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.net.http.HttpRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +54,7 @@ public class PostController {
 
     @PatchMapping("/posts/{postId}")
     public void edit(@PathVariable Long postId, @RequestBody @Valid PostEdit postEdit) {
+        postEdit.validate();
         postService.edit(postId, postEdit);
     }
 

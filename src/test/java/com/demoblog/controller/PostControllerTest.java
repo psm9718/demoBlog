@@ -102,7 +102,7 @@ class PostControllerTest {
                 .build();
         String request = convertToJson(postCreate);
 
-        mockMvc.perform(post("/posts")
+        mockMvc.perform(post("/posts?accessToken=1")
                         .contentType(APPLICATION_JSON)
                         .content(request))
                 .andExpect(status().isOk())
@@ -232,10 +232,10 @@ class PostControllerTest {
     @DisplayName("존재하지 않는 게시글")
     void postNotFound() throws Exception {
         //given
-        mockMvc.perform(get("/posts/{postId}", 33L)
+        mockMvc.perform(get("/posts/{postId}?accessToken=1", 33L)
                         .contentType(APPLICATION_JSON)
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andDo(print());
 
         //when

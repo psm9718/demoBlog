@@ -1,5 +1,6 @@
 package com.demoblog.request;
 
+import com.demoblog.exception.InvalidRequest;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -18,4 +19,9 @@ public class PostEdit {
     @NotBlank(message = "컨텐츠 값은 필수입니다.")
     private String content;
 
+    public void validate() {
+        if (title.contains("바보")) {
+            throw new InvalidRequest("title", "제목에 \'바보\'가 포함될 수 없습니다.");
+        }
+    }
 }
